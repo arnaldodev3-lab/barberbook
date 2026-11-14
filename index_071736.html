@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BarberBook</title>
+
+    <style>
+        :root {
+            --tinta: #14213d;
+            --vermelho: #c8102e;
+            --azul: #1d4e89;
+            --fundo: #e8ebef;
+            --linha: #d3d8df;
+            --texto: #1f2933;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+            text-align: center;
+            margin: 0;
+            padding: 24px 16px;
+        }
+
+        .caixa {
+            position: relative;
+            overflow: hidden;
+            background: #fff;
+            max-width: 420px;
+            margin: 0 auto 20px;
+            padding: 32px 24px 24px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(20, 33, 61, 0.15);
+        }
+
+        /* Faixa de poste de barbeiro */
+        .caixa::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 8px;
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--vermelho) 0 10px,
+                #fff 10px 20px,
+                var(--azul) 20px 30px,
+                #fff 30px 40px
+            );
+        }
+
+        h2, h3 {
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--tinta);
+            margin: 6px 0 18px;
+        }
+
+        h2 { font-size: 32px; letter-spacing: 0.5px; }
+        h3 { font-size: 22px; }
+
+        input, select, button {
+            width: 100%;
+            padding: 11px 12px;
+            margin: 6px 0;
+            font: inherit;
+            color: inherit;
+            background: #fff;
+            border: 1px solid var(--linha);
+            border-radius: 4px;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid var(--azul);
+            outline-offset: 1px;
+            border-color: var(--azul);
+        }
+
+        .linha {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            background: var(--tinta);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+
+        button:hover { background: #0d1730; }
+        button:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+        #mensagem {
+            margin: 16px 0 0;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-line;
+            border-radius: 4px;
+        }
+
+        #mensagem:empty { display: none; }
+
+        .ok {
+            background: #eaf6ee;
+            border-left: 4px solid #1b7a2f;
+            color: #14532d;
+        }
+
+        .erro {
+            background: #fdecee;
+            border-left: 4px solid var(--vermelho);
+            color: #8a0c20;
+        }
+
+        .item {
+            text-align: left;
+            margin: 10px 0;
+            padding: 12px 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            background: #f6f7f9;
+            border-left: 4px solid var(--vermelho);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .item strong {
+            display: block;
+            color: var(--tinta);
+            font-size: 15px;
+        }
+
+        .item button {
+            width: auto;
+            margin: 8px 0 0;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            background: transparent;
+            color: var(--vermelho);
+            border: 1px solid var(--vermelho);
+        }
+
+        .item button:hover {
+            background: var(--vermelho);
+            color: #fff;
+        }
+
+        .rodape {
+            font-size: 12px;
+            color: #5b6573;
+            line-height: 1.6;
+            margin: 10px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="caixa">
+
+        <h2>BarberBook</h2>
+
+        <select id="barbearia">
+            <option>Escolha a Barbearia</option>
+            <option>Style's Barber</option>
+            <option>Barbearia Elegance</option>
+            <option>Barbearia VIP</option>
+            <option>Barbearia Jona's</option>
+        </select>
+
+        <div class="linha">
+            <input type="date" id="dia">
+            <input type="time" id="hora">
+        </div>
+
+        <select id="barbeiro">
+            <option>Escolha o Barbeiro</option>
+            <option>Nelson</option>
+            <option>Alfiado</option>
+            <option>Antus</option>
+            <option>Bartolomeu</option>
+        </select>
+
+        <select id="corte">
+            <option>Escolha o Corte</option>
+            <option>Corte Americano</option>
+            <option>Corte Frances</option>
+            <option>Carreca</option>
+            <option>Corte Social</option>
+        </select>
+
+        <input type="text" id="contacto" placeholder="Contacto">
+
+        <button onclick="agendar()">Agendar</button>
+
+        <p id="mensagem"></p>
+
+    </div>
+
+    <div class="caixa">
+        <h3>Agendamentos</h3>
+        <div id="lista"></div>
+    </div>
+
+    <p class="rodape">
+        BarberBook &copy; Projecto da responsabilidade de Antus Artur Jone Ibraimo<br>
+        Universidade Rovuma
+    </p>
+
+    <script>
+
+        // ---------- BASE DE DADOS (IndexedDB) ----------
+
+        const NOME_BD = "BarberBookDB";
+        const TABELA = "agendamentos";
+        let bd;
+
+        function abrirBD() {
+            return new Promise(function (resolve, reject) {
+                const pedido = indexedDB.open(NOME_BD, 1);
+
+                // Cria a "tabela" na primeira vez
+                pedido.onupgradeneeded = function (e) {
+                    const base = e.target.result;
+                    const tabela = base.createObjectStore(TABELA, {
+                        keyPath: "id",
+                        autoIncrement: true
+                    });
+
+                    // Índice único: impede dois agendamentos
+                    // na mesma barbearia, com o mesmo barbeiro, dia e hora
+                    tabela.createIndex(
+                        "horario",
+                        ["barbearia", "barbeiro", "dia", "hora"],
+                        { unique: true }
+                    );
+                };
+
+                pedido.onsuccess = function (e) { resolve(e.target.result); };
+                pedido.onerror = function () { reject(pedido.error); };
+            });
+        }
+
+        function guardar(agendamento) {
+            return new Promise(function (resolve, reject) {
+                const tx = bd.transaction(TABELA, "readwrite");
+                const pedido = tx.objectStore(TABELA).add(agendamento);
+
+                pedido.onsuccess = function () { resolve(pedido.result); };
+                pedido.onerror = function (e) {
+                    e.preventDefault();
+                    reject(pedido.error);
+                };
+            });
+        }
+
+        function listar() {
+            return new Promise(function (resolve, reject) {
+                const pedido = bd.transaction(TABELA, "readonly")
+                    .objectStore(TABELA).getAll();
+
+                pedido.onsuccess = function () {
+                    const dados = pedido.result;
+                    dados.sort(function (a, b) {
+                        return (a.dia + a.hora).localeCompare(b.dia + b.hora);
+                    });
+                    resolve(dados);
+                };
+                pedido.onerror = function () { reject(pedido.error); };
+            });
+        }
+
+        function apagar(id) {
+            return new Promise(function (resolve, reject) {
+                const pedido = bd.transaction(TABELA, "readwrite")
+                    .objectStore(TABELA).delete(id);
+
+                pedido.onsuccess = function () { resolve(); };
+                pedido.onerror = function () { reject(pedido.error); };
+            });
+        }
+
+        // ---------- INTERFACE ----------
+
+        function mostrarMensagem(texto, classe) {
+            const m = document.getElementById("mensagem");
+            m.textContent = texto;
+            m.className = classe || "";
+        }
+
+        async function agendar() {
+
+            const barbearia = document.getElementById("barbearia").value;
+            const dia = document.getElementById("dia").value;
+            const hora = document.getElementById("hora").value;
+            const barbeiro = document.getElementById("barbeiro").value;
+            const corte = document.getElementById("corte").value;
+            const contacto = document.getElementById("contacto").value.trim();
+
+            if (barbearia == "Escolha a Barbearia" ||
+                dia == "" ||
+                hora == "" ||
+                barbeiro == "Escolha o Barbeiro" ||
+                corte == "Escolha o Corte" ||
+                contacto == "") {
+
+                mostrarMensagem("Preencha todos os campos", "erro");
+                return;
+            }
+
+            try {
+                await guardar({
+                    barbearia: barbearia,
+                    dia: dia,
+                    hora: hora,
+                    barbeiro: barbeiro,
+                    corte: corte,
+                    contacto: contacto,
+                    criadoEm: new Date().toISOString()
+                });
+
+                mostrarMensagem(
+                    "Agendamento confirmado\n\n" +
+                    "Barbearia: " + barbearia + "\n" +
+                    "Dia: " + dia + "\n" +
+                    "Hora: " + hora + "\n" +
+                    "Barbeiro: " + barbeiro + "\n" +
+                    "Corte: " + corte + "\n" +
+                    "Contacto: " + contacto,
+                    "ok"
+                );
+
+                document.getElementById("contacto").value = "";
+                mostrarLista();
+
+            } catch (erro) {
+                if (erro && erro.name === "ConstraintError") {
+                    mostrarMensagem(
+                        "Esse barbeiro já tem um agendamento nesse dia e hora. Escolha outro horário.",
+                        "erro"
+                    );
+                } else {
+                    mostrarMensagem("Erro ao guardar o agendamento.", "erro");
+                }
+            }
+        }
+
+        async function mostrarLista() {
+            const lista = document.getElementById("lista");
+            lista.textContent = "";
+
+            const dados = await listar();
+
+            if (dados.length == 0) {
+                lista.textContent = "Ainda não há agendamentos.";
+                return;
+            }
+
+            dados.forEach(function (a) {
+                const div = document.createElement("div");
+                div.className = "item";
+
+                const linhas = [
+                    a.dia + " às " + a.hora,
+                    a.barbearia + " - " + a.barbeiro,
+                    a.corte,
+                    "Contacto: " + a.contacto
+                ];
+
+                linhas.forEach(function (texto, i) {
+                    const linha = document.createElement(i == 0 ? "strong" : "div");
+                    linha.textContent = texto;
+                    div.appendChild(linha);
+                });
+
+                const botao = document.createElement("button");
+                botao.textContent = "Cancelar";
+                botao.onclick = async function () {
+                    await apagar(a.id);
+                    mostrarLista();
+                };
+                div.appendChild(botao);
+
+                lista.appendChild(div);
+            });
+        }
+
+        // ---------- ARRANQUE ----------
+
+        (async function iniciar() {
+            // Não permite escolher datas passadas
+            document.getElementById("dia").min =
+                new Date().toISOString().split("T")[0];
+
+            try {
+                bd = await abrirBD();
+                mostrarLista();
+            } catch (erro) {
+                mostrarMensagem(
+                    "Não foi possível abrir a base de dados neste navegador.",
+                    "erro"
+                );
+            }
+        })();
+
+    </script>
+
+</body>
+</html>
